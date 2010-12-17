@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<app>
+  <id>boxed-view</id>
+  <name>ABC iView</name>
+  <version>0.1</version>
+  <type>skin</type>
+  <description>View ABC iView programmes on your Boxee</description>
+  <platform>all</platform>
+  <thumb>http://a1.phobos.apple.com/us/r1000/034/Purple/e3/39/0e/mzi.tmlbqlir.175x175-75.jpg</thumb>
+  <media>video</media>
+  <copyright>GPL</copyright>
+  <email>lindsay@holmwood.id.au</email>
+  <minversion>0.9.11</minversion>
+  <startWindow>14000</startWindow>
+  <test-app>true</test-app>
+</app>
+
+
+
