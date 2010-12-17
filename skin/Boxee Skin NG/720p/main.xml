@@ -121,6 +121,8 @@ mc.HideDialogWait()
 import urllib2, sys, os
 import iview.comm, iview.config, iview.fetch
 
+mc.ShowDialogWait()
+
 try:
     iview.comm.get_config()
 except urllib2.HTTPError, error:
@@ -140,25 +142,31 @@ episodes      = iview.comm.get_series_items(series_id)
 
 episodesMenuItems = mc.ListItems()
 for episode in episodes:
-  baseUrl   = 'flash://abc.net.au/?src='
-  programme = "http://www.abc.net.au/iview/#/program/" + str(episode['id'])
-  callback = "&bx-jsactions=http%3A%2F%2Fnoisymime.org%2Fboxee%2Fabc.js"
-  path      = baseUrl + programme + callback
+  baseUrl     = 'flash://abc.net.au/?src='
+  programme   = "http://www.abc.net.au/iview/#/program/" + str(episode['id'])
+  callback    = "&bx-jsactions=http%3A%2F%2Fnoisymime.org%2Fboxee%2Fabc.js"
+  path        = baseUrl + programme + callback
+  title       = str(episode['title'])
+  thumb       = str(episode['thumb'])
+  description = str(episode['description'])
 
   item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
-  item.SetLabel(str(episode['title']))
+  item.SetLabel(title)
+  item.SetTitle(title)
   item.SetPath(path)
 
-  item.SetImage(0, str(episode['thumb']))
-  item.SetThumbnail(str(episode['thumb']))
-  item.SetComment(str(episode['description']))
-  item.SetDescription(str(episode['description']), True)
+  item.SetImage(0, thumb)
+  item.SetThumbnail(thumb)
+  item.SetComment(description)
+  item.SetDescription(description, True)
   #item.SetDate(*[int(i) for i in str(episode['date']).split('-')[0:2]].append(False))
   episodesMenuItems.append(item)
 
 episodesMenu = mc.GetActiveWindow().GetList(120)
 episodesMenu.SetItems(episodesMenuItems)
 episodesMenu.SetFocus()
+
+mc.HideDialogWait()
 ]]>
                   </onclick>
               </content>
