@@ -4,40 +4,35 @@
     <allowoverlay>no</allowoverlay>
     <onload lang="python">
 <![CDATA[
-import operator
+import urllib2, sys, os
+import iview.comm, iview.config
 
-shows = { "ABC News 24": 402,
-          "Peep Show": 109,
-          "Scene By Scene": 717,
-          "Nigella Express": 104,
-          "Peep Show Series 6": 111,
-          "Stephen Fry In America Series 1": 124,
-          "Glastonbury 2010 Series 1": 125,
-          "League of Super Evil Series 1": 126,
-          "Damon and Jamie's Excellent Adventure": 127,
-          "Kevin McCloud's Grand Tour Series 1": 128,
-          "Juanna Lumley In The Land Of The Northern Lights": 129,
-          "The Trophy Room Series 1": 130,
-          "The Ugly Truth About Beauty": 131,
-          "Sleek Geeks": 132,
-          "Inside the Great Magazines": 133,
-          "To The Manor Bowen": 134,
-          "Kevin McCloud's Grand Tour": 135,
-          "Museum of Life": 136,
-          "Fact or Fiction": 137,
-          "Willie's Chocolate Revolution": 138,
-          "Elizabeth": 139,
-          "Reel Bad Arabs": 140
-        }
+mc.ShowDialogWait()
 
-seriesMenu = mc.ListItems()
-for key, value in sorted(shows.iteritems(), key=operator.itemgetter(0)):
+try:
+    iview.comm.get_config()
+except urllib2.HTTPError, error:
+    message = []
+    message.append('Could not retrieve an important configuration file from iView.')
+    message.append('Please make sure you are connected to the Internet.')
+    message.append('If iView works fine in your web browser, the iView API has possibly changed.')
+    message.append('Try to find an updated version of this program or contact the author.')
+    mc.ShowDialogOk("Error", "\n".join(message))
+    mc.LogDebug('Debug: could not load URL', error.url)
+
+seriesMenuItems = mc.ListItems()
+index = iview.comm.get_index()
+
+for series in index:
   item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
-  item.SetLabel(str(key))
-  item.SetProperty('id', str(value))
-  seriesMenu.append(item)
+  item.SetLabel(str(series['title']))
+  item.SetProperty('id', str(series['id']))
+  seriesMenuItems.append(item)
 
-mc.GetActiveWindow().GetList(110).SetItems(seriesMenu)
+seriesMenu = mc.GetActiveWindow().GetList(110)
+seriesMenu.SetItems(seriesMenuItems)
+
+mc.HideDialogWait()
 ]]>
     </onload>
     <controls>
@@ -72,20 +67,42 @@ mc.GetActiveWindow().GetList(110).SetItems(seriesMenu)
               <content type="action">
                   <onclick lang="python">
 <![CDATA[
-import operator
+import urllib2, sys, os
+import iview.comm, iview.config, iview.fetch
 
-episodes = [
-             { "title": "Episode 1", "url": "dailyshow_10_01_161.mp4" },
-             { "title": "Episode 2", "url": "dailyshow_10_01_162.mp4" },
-             { "title": "Episode 3", "url": "dailyshow_10_01_163.mp4" },
-             { "title": "Episode 4", "url": "dailyshow_10_01_164.mp4" }
-           ]
+try:
+    iview.comm.get_config()
+except urllib2.HTTPError, error:
+    message = []
+    message.append('Could not retrieve an important configuration file from iView.')
+    message.append('Please make sure you are connected to the Internet.')
+    message.append('If iView works fine in your web browser, the iView API has possibly changed.')
+    message.append('Try to find an updated version of this program or contact the author.')
+    mc.ShowDialogOk("Error", "\n".join(message))
+    mc.LogDebug('Debug: could not load URL', error.url)
+
+seriesMenu    = mc.GetActiveWindow().GetList(110)
+selectedIndex = seriesMenu.GetFocusedItem()
+selected      = seriesMenu.GetItems()[selectedIndex]
+series_id     = selected.GetProperty("id")
+episodes      = iview.comm.get_series_items(series_id)
 
 episodesMenuItems = mc.ListItems()
 for episode in episodes:
-  item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
-  item.SetLabel(episode.get('title'))
-  item.SetProperty('url', episode.get('url'))
+  baseUrl   = 'flash://abc.net.au/?src='
+  programme = "http://www.abc.net.au/iview/#/program/" + str(episode['id'])
+  callback = "&bx-jsactions=http%3A%2F%2Fnoisymime.org%2Fboxee%2Fabc.js"
+  path      = baseUrl + programme + callback
+
+  item = mc.ListItem(mc.ListItem.MEDIA_VIDEO_EPISODE)
+  item.SetLabel(str(episode['title']))
+  item.SetPath(path)
+
+  item.SetImage(0, str(episode['thumb']))
+  item.SetThumbnail(str(episode['thumb']))
+  item.SetComment(str(episode['description']))
+  item.SetDescription(str(episode['description']), True)
+  #item.SetDate(*[int(i) for i in str(episode['date']).split('-')[0:2]].append(False))
   episodesMenuItems.append(item)
 
 episodesMenu = mc.GetActiveWindow().GetList(120)
