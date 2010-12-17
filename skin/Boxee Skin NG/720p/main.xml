@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<window type="window" id="14000">
+    <defaultcontrol always="true">110</defaultcontrol>
+    <allowoverlay>no</allowoverlay>
+    <onload lang="python">
+<![CDATA[
+import operator
+
+shows = { "ABC News 24": 402,
+          "Peep Show": 109,
+          "Scene By Scene": 717,
+          "Nigella Express": 104,
+          "Peep Show Series 6": 111,
+          "Stephen Fry In America Series 1": 124,
+          "Glastonbury 2010 Series 1": 125,
+          "League of Super Evil Series 1": 126,
+          "Damon and Jamie's Excellent Adventure": 127,
+          "Kevin McCloud's Grand Tour Series 1": 128,
+          "Juanna Lumley In The Land Of The Northern Lights": 129,
+          "The Trophy Room Series 1": 130,
+          "The Ugly Truth About Beauty": 131,
+          "Sleek Geeks": 132,
+          "Inside the Great Magazines": 133,
+          "To The Manor Bowen": 134,
+          "Kevin McCloud's Grand Tour": 135,
+          "Museum of Life": 136,
+          "Fact or Fiction": 137,
+          "Willie's Chocolate Revolution": 138,
+          "Elizabeth": 139,
+          "Reel Bad Arabs": 140
+        }
+
+seriesMenu = mc.ListItems()
+for key, value in sorted(shows.iteritems(), key=operator.itemgetter(0)):
+  item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
+  item.SetLabel(str(key))
+  item.SetProperty('id', str(value))
+  seriesMenu.append(item)
+
+mc.GetActiveWindow().GetList(110).SetItems(seriesMenu)
+]]>
+    </onload>
+    <controls>
+        <control type="group">
+            <!-- background image -->
+            <control type="image">
+                <posx>0</posx>
+                <posy>0</posy>
+                <width>1280</width>
+                <height>720</height>
+                <texture>background.png</texture>
+            </control>
+        </control>
+        <control type="group" id="50">
+            <control type="label" id="60">
+                <posx>80</posx>
+                <posy>40</posy>
+                <label>ABC iView</label>
+                <font>title56b</font>
+                <textcolor>white</textcolor>
+            </control>
+        </control>
+        <!-- series/episode selection interface -->
+        <control type="group" id="100">
+            <!-- list of series -->
+            <control type="list" id="110">
+              <width>520</width>
+              <height>520</height>
+              <posx>80</posx>
+              <posy>160</posy>
+              <onright>120</onright>
+              <content type="action">
+                  <onclick lang="python">
+<![CDATA[
+import operator
+
+episodes = [
+             { "title": "Episode 1", "url": "dailyshow_10_01_161.mp4" },
+             { "title": "Episode 2", "url": "dailyshow_10_01_162.mp4" },
+             { "title": "Episode 3", "url": "dailyshow_10_01_163.mp4" },
+             { "title": "Episode 4", "url": "dailyshow_10_01_164.mp4" }
+           ]
+
+episodesMenuItems = mc.ListItems()
+for episode in episodes:
+  item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
+  item.SetLabel(episode.get('title'))
+  item.SetProperty('url', episode.get('url'))
+  episodesMenuItems.append(item)
+
+episodesMenu = mc.GetActiveWindow().GetList(120)
+episodesMenu.SetItems(episodesMenuItems)
+episodesMenu.SetFocus()
+]]>
+                  </onclick>
+              </content>
+              <orientation>vertical</orientation>
+              <itemlayout width="520" height="40">
+                  <control type="label">
+                      <label>$INFO[ListItem.Label]</label>
+                      <font>font28b</font>
+                      <align>left</align>
+                      <textcolor>ff18b5b1</textcolor>
+                  </control>
+              </itemlayout>
+              <focusedlayout width="520" height="40">
+                  <control type="label">
+                      <label>$INFO[ListItem.Label]</label>
+                      <font>font28b</font>
+                      <align>left</align>
+                      <textcolor>white</textcolor>
+                  </control>
+              </focusedlayout>
+            </control>
+            <!-- episodes list -->
+            <control type="list" id="120">
+              <width>520</width>
+              <height>520</height>
+              <posx>680</posx>
+              <posy>160</posy>
+              <orientation>vertical</orientation>
+              <onleft>110</onleft>
+              <itemlayout width="520" height="40">
+                  <control type="label">
+                      <label>$INFO[ListItem.Label]</label>
+                      <font>font28b</font>
+                      <align>left</align>
+                      <textcolor>ff18b5b1</textcolor>
+                  </control>
+              </itemlayout>
+              <focusedlayout width="520" height="40">
+                  <control type="label">
+                      <label>$INFO[ListItem.Label]</label>
+                      <font>font28b</font>
+                      <align>left</align>
+                      <textcolor>white</textcolor>
+                  </control>
+              </focusedlayout>
+            </control>
+        </control>
+    </controls>
+</window>
