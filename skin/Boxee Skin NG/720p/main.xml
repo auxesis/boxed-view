@@ -36,8 +36,8 @@ mc.HideDialogWait()
 ]]>
     </onload>
     <controls>
+        <!-- background image -->
         <control type="group">
-            <!-- background image -->
             <control type="image">
                 <posx>0</posx>
                 <posy>0</posy>
@@ -46,6 +46,7 @@ mc.HideDialogWait()
                 <texture>background.png</texture>
             </control>
         </control>
+        <!-- header -->
         <control type="group" id="50">
             <control type="label" id="60">
                 <posx>80</posx>
@@ -53,6 +54,55 @@ mc.HideDialogWait()
                 <label>ABC iView</label>
                 <font>title56b</font>
                 <textcolor>white</textcolor>
+            </control>
+            <control type="edit" id="70">
+                <width>320</width>
+                <height>40</height>
+                <posx>880</posx>
+                <posy>70</posy>
+                <align>right</align>
+                <font>font24b</font>
+                <label>Search:</label>
+                <textcolor>ff18b5b1</textcolor>
+                <focusedcolor>white</focusedcolor>
+                <ondown>110</ondown>
+                <ontextchange lang="python">
+<![CDATA[
+term = mc.GetActiveWindow().GetEdit(70).GetText()
+
+import urllib2, sys, os, re
+import iview.comm, iview.config
+
+mc.ShowDialogWait()
+
+try:
+    iview.comm.get_config()
+except urllib2.HTTPError, error:
+    message = []
+    message.append('Could not retrieve an important configuration file from iView.')
+    message.append('Please make sure you are connected to the Internet.')
+    message.append('If iView works fine in your web browser, the iView API has possibly changed.')
+    message.append('Try to find an updated version of this program or contact the author.')
+    mc.ShowDialogOk("Error", "\n".join(message))
+    mc.LogDebug('Debug: could not load URL', error.url)
+
+seriesMenuItems = mc.ListItems()
+index = iview.comm.get_index()
+
+for series in index:
+  if re.search(term, str(series['title']), re.IGNORECASE):
+    item = mc.ListItem(mc.ListItem.MEDIA_UNKNOWN)
+    item.SetLabel(str(series['title']))
+    item.SetProperty('id', str(series['id']))
+    seriesMenuItems.append(item)
+
+seriesMenu = mc.GetActiveWindow().GetList(110)
+seriesMenu.SetItems(seriesMenuItems)
+
+mc.HideDialogWait()
+
+]]>
+                </ontextchange>
             </control>
         </control>
         <!-- series/episode selection interface -->
@@ -63,6 +113,7 @@ mc.HideDialogWait()
               <height>520</height>
               <posx>80</posx>
               <posy>160</posy>
+              <onup>70</onup>
               <onright>120</onright>
               <content type="action">
                   <onclick lang="python">
@@ -136,6 +187,7 @@ episodesMenu.SetFocus()
               <posx>680</posx>
               <posy>160</posy>
               <orientation>vertical</orientation>
+              <onup>70</onup>
               <onleft>110</onleft>
               <itemlayout width="520" height="40">
                   <control type="label">
