@@ -8,7 +8,7 @@ Boxed View is a [Boxee](http://boxee.tv) app to browse and watch shows on [ABC i
 Installing + developing
 -----------------------
 
-Boxed View is currently under heavy development, so the install process isn't as nice as other Boxee apps. We're working on it!
+Boxed View is currently under heavy development, so the install process isn't as nice as other Boxee apps. Working on it!
 
 Boxed View has only been tested + developed on OS X. To install:
 
